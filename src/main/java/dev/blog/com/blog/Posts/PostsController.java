@@ -19,13 +19,12 @@ public class PostsController {
 
     @GetMapping
     public List<PostsModel> findAll() {
-//        return "List of all Post";
         return service.findAll();
     }
 
     @GetMapping("/{id}")
-    public String findById(@PathVariable Long id) {
-        return "Post with id: " + id;
+    public PostsModel findById(@PathVariable Long id) {
+        return service.findById(id);
     }
 
     @PutMapping("/{id}")
@@ -37,5 +36,4 @@ public class PostsController {
     public String delete(@PathVariable Long id) {
         return "Post with ID " + id + " deleted";
     }
-
 }
