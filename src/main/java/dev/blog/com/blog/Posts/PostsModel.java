@@ -30,5 +30,4 @@ public class PostsModel {
     @ManyToOne
     @JoinColumn(name = "admin_id") // Boa prática: define o nome da coluna da FK
     private AdminModel admin;
-
 }
