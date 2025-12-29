@@ -1,5 +1,4 @@
 package dev.blog.com.blog.Admins;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import dev.blog.com.blog.Posts.PostsModel;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
