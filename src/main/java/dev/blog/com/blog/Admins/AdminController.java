@@ -1,4 +1,4 @@
-package dev.blog.com.blog;
+package dev.blog.com.blog.Admins;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 //Mapeia as rotas
 @RequestMapping
-public class Controller {
+public class AdminController {
 
     //GET
     @GetMapping("/boasvinda")
