@@ -24,7 +24,6 @@ public class PostsModel {
     @CreationTimestamp
     private LocalDateTime dataPublication;
     private String summary;
-    private String author;
     private Boolean status;
 
 //    Muitos posts para um adm;
