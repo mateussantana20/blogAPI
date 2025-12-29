@@ -1,4 +1,5 @@
 package dev.blog.com.blog.Admins;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import dev.blog.com.blog.Posts.PostsModel;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -22,6 +23,7 @@ public class AdminModel {
 
     @Column(unique = true)
     private String email;
+    @JsonIgnore
     private String password;
     private String profilePicture;
     private String bio;
