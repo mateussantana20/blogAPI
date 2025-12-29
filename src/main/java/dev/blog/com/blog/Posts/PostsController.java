@@ -1,17 +1,26 @@
 package dev.blog.com.blog.Posts;
 
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/posts")
 public class PostsController {
+    private final PostsService service;
+
+    public PostsController(PostsService service) {
+        this.service = service;
+    }
+
     @PostMapping
     public String create() {
         return "Post created successfully";
     }
+
     @GetMapping
-    public String findAll() {
-        return "List of all Post";
+    public List<PostsModel> findAll() {
+//        return "List of all Post";
+        return service.findAll();
     }
 
     @GetMapping("/{id}")

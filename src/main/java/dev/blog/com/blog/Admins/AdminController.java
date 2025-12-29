@@ -1,13 +1,18 @@
 package dev.blog.com.blog.Admins;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 // Essa anotation diz que essa classe é um controller
 @RestController
 //Mapeia as rotas
 @RequestMapping("/admins")
 public class AdminController {
+    private final AdminService service;
 
-    private AdminRepository repository; // Injetando a ferramenta que fala com o banco
+    public AdminController(AdminService service) {
+        this.service = service;
+    }
 
     //GET
     @GetMapping("/boasvinda")
@@ -18,20 +23,19 @@ public class AdminController {
     // Adicionar admin
     @PostMapping
     public AdminModel create(@RequestBody AdminModel admin) {
-//        return "Admin created successfully";
-        return repository.save(admin);
+        return service.create(admin);
     }
 
     // Mostrar todos os admins
     @GetMapping
-    public String findAll() {
-        return "List of all admins";
+    public List<AdminModel> findAll() {
+        return service.findAll();
     }
 
     // Procurar Admin por ID
     @GetMapping("/{id}")
-    public String findById(@PathVariable Long id) {
-        return "listarAdminID";
+    public AdminModel findById(@PathVariable Long id) {
+        return service.findById(id);
     }
 
     // Alterar dados do admin
