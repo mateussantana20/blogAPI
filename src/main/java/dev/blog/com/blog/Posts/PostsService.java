@@ -22,20 +22,24 @@ public class PostsService {
         return post.orElse(null);
     }
 
-    public PostsModel update (PostsModel post, Long id) {
-        Optional<PostsModel> postsModel = repository.findById(id);
-        if (postsModel.isPresent()) {
-            PostsModel updated = postsModel.get();
-            return repository.save(updated);
-        }
-        return null;
+    public PostsModel update(PostsModel post, Long id) {
+        return repository.findById(id).map(existingPost -> {
+            post.setId(id);
+            return repository.save(post);
+        }).orElse(null);
     }
 
     public PostsModel save(PostsModel post) {
+        // Se não vier data, coloca a data de agora antes de salvar
+        if (post.getDataPublication() == null) {
+            post.setDataPublication(java.time.LocalDateTime.now());
+        }
         return repository.save(post);
     }
 
     public void deleteById(Long id) {
-        repository.deleteById(id);
+        if (repository.existsById(id)) {
+            repository.deleteById(id);
+        }
     }
 }

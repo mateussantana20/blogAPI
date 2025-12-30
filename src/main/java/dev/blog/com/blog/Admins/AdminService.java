@@ -11,22 +11,29 @@ public class AdminService {
     }
 
     //Listar todos os ninjas
-    public List<AdminModel> findAll () {
+    public List<AdminModel> findAll() {
         return repository.findAll();
     }
-
     //Criar
     public AdminModel create(AdminModel admin) {
         return repository.save(admin);
     }
 
     // Listar por iD
-    public AdminModel findById (Long id) {
+    public AdminModel findById(Long id) {
         return repository.findById(id).orElse(null);
     }
 
-    public void deleteById (Long id) {
-        repository.deleteById(id);
+    public AdminModel update(AdminModel admin, Long id) {
+        return repository.findById(id).map(existingAdmin -> {
+            admin.setId(id);
+            return repository.save(admin);
+        }).orElse(null);
     }
 
+    public void deleteById(Long id) {
+        if (repository.existsById(id)) {
+            repository.deleteById(id);
+        }
+    }
 }
