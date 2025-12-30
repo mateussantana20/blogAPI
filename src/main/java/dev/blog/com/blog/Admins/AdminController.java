@@ -1,4 +1,6 @@
 package dev.blog.com.blog.Admins;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,31 +24,42 @@ public class AdminController {
 
     // Adicionar admin
     @PostMapping
-    public AdminModel create(@RequestBody AdminModel admin) {
-        return service.create(admin);
+    public ResponseEntity<AdminModel> create(@RequestBody AdminModel admin) {
+        AdminModel createdAdmin = service.create(admin);
+        return ResponseEntity.status(201).body(createdAdmin);
     }
 
     // Mostrar todos os admins
     @GetMapping
-    public List<AdminModel> findAll() {
-        return service.findAll();
+    public ResponseEntity<List<AdminModel>> findAll() {
+        List<AdminModel> admins = service.findAll();
+        return ResponseEntity.ok(admins); // Status 200 OK
     }
 
     // Procurar Admin por ID
     @GetMapping("/{id}")
-    public AdminModel findById(@PathVariable Long id) {
-        return service.findById(id);
+    public ResponseEntity<AdminModel> findById(@PathVariable Long id) {
+        AdminModel admin = service.findById(id);
+        if (admin != null) {
+            return ResponseEntity.ok(admin); // Status 200 OK
+        }
+        return ResponseEntity.notFound().build(); // Status 404 Not Found
     }
 
     // Alterar dados do admin
     @PutMapping("/{id}")
-    public String update(@PathVariable Long id) {
-        return "Admin with ID " + id + " updated";
+    public ResponseEntity<AdminModel> update(@PathVariable Long id, @RequestBody AdminModel admin) {
+        AdminModel updatedAdmin = service.update(admin, id);
+        if (updatedAdmin != null) {
+            return ResponseEntity.ok(updatedAdmin); // Status 200 OK
+        }
+        return ResponseEntity.notFound().build(); // Status 404 Not Found
     }
 
     // Deletar admin
     @DeleteMapping("/{id}")
-    public void deleteById(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteById(@PathVariable Long id) {
         service.deleteById(id);
+        return ResponseEntity.noContent().build(); // Status 204 No Content
     }
 }
