@@ -16,7 +16,6 @@ CREATE TABLE tb_posts (
                           image_url VARCHAR(255),
                           data_publication TIMESTAMP NOT NULL,
                           summary VARCHAR(255),
-                          author VARCHAR(255),
                           status BOOLEAN,
                           admin_id BIGINT,
     -- Chave Estrangeira ligando Post ao Admin

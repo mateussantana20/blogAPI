@@ -46,7 +46,7 @@ public class AdminController {
 
     // Deletar admin
     @DeleteMapping("/{id}")
-    public String delete(@PathVariable Long id) {
-        return "Admin with ID " + id + " deleted";
+    public void deleteById(@PathVariable Long id) {
+        service.deleteById(id);
     }
 }

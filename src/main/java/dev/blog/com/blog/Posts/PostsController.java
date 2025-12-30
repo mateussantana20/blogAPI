@@ -1,5 +1,4 @@
 package dev.blog.com.blog.Posts;
-
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -13,8 +12,8 @@ public class PostsController {
     }
 
     @PostMapping
-    public String create() {
-        return "Post created successfully";
+    public PostsModel create(@RequestBody PostsModel post ) {
+        return service.save(post);
     }
 
     @GetMapping
@@ -28,12 +27,12 @@ public class PostsController {
     }
 
     @PutMapping("/{id}")
-    public String update(@PathVariable Long id) {
-        return "Post with ID " + id + " updated";
+    public PostsModel update(@RequestBody PostsModel post, @PathVariable Long id) {
+       return service.update(post, id);
     }
 
     @DeleteMapping("/{id}")
-    public String delete(@PathVariable Long id) {
-        return "Post with ID " + id + " deleted";
+    public void deleteById(@PathVariable Long id) {
+        service.deleteById(id);
     }
 }
