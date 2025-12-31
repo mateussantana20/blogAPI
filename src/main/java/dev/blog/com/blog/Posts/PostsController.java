@@ -1,4 +1,5 @@
 package dev.blog.com.blog.Posts;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -13,7 +14,7 @@ public class PostsController {
     }
 
     @PostMapping
-    public ResponseEntity<PostsModel> create(@RequestBody PostsModel post) {
+    public ResponseEntity<PostsModel> create(@Valid @RequestBody PostsModel post) {
         PostsModel savedPost = service.save(post);
         return ResponseEntity.status(201).body(savedPost);
     }
@@ -33,7 +34,7 @@ public class PostsController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PostsModel> update(@RequestBody PostsModel post, @PathVariable Long id) {
+    public ResponseEntity<PostsModel> update(@Valid @RequestBody PostsModel post, @PathVariable Long id) {
         PostsModel updatedPost = service.update(post, id);
         if (updatedPost != null) {
             return ResponseEntity.ok(updatedPost);

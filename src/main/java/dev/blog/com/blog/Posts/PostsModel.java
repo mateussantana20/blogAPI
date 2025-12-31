@@ -1,6 +1,7 @@
 package dev.blog.com.blog.Posts;
 import dev.blog.com.blog.Admins.AdminModel;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,8 +17,12 @@ public class PostsModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @NotBlank(message = "O título é obrigatório")
     private String title;
+
     @Column(columnDefinition = "TEXT")
+    @NotBlank(message = "O conteúdo não pode estar vazio")
     private String content;
     private String imageUrl;
 

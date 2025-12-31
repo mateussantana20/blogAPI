@@ -1,4 +1,5 @@
 package dev.blog.com.blog.Admins;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +25,7 @@ public class AdminController {
 
     // Adicionar admin
     @PostMapping
-    public ResponseEntity<AdminModel> create(@RequestBody AdminModel admin) {
+    public ResponseEntity<AdminModel> create(@Valid @RequestBody AdminModel admin) {
         AdminModel createdAdmin = service.create(admin);
         return ResponseEntity.status(201).body(createdAdmin);
     }
@@ -48,7 +49,7 @@ public class AdminController {
 
     // Alterar dados do admin
     @PutMapping("/{id}")
-    public ResponseEntity<AdminModel> update(@PathVariable Long id, @RequestBody AdminModel admin) {
+    public ResponseEntity<AdminModel> update(@Valid @PathVariable Long id, @RequestBody AdminModel admin) {
         AdminModel updatedAdmin = service.update(admin, id);
         if (updatedAdmin != null) {
             return ResponseEntity.ok(updatedAdmin); // Status 200 OK
