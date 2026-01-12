@@ -6,7 +6,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import java.util.Optional;
 
 @Service
 public class PostsService {
@@ -18,7 +17,6 @@ public class PostsService {
         this.repository = repository;
         this.adminRepository = adminRepository;
     }
-
     public List<PostsModel> findAll() {
         return repository.findAll();
     }
@@ -44,10 +42,8 @@ public class PostsService {
         if (post.getDataPublication() == null) {
             post.setDataPublication(LocalDateTime.now());
         }
-
         return repository.save(post);
     }
-
     public PostsModel update(PostsModel post, Long id) {
         return repository.findById(id).map(existingPost -> {
             post.setId(id);
@@ -56,14 +52,12 @@ public class PostsService {
             if (post.getDataPublication() == null) {
                 post.setDataPublication(existingPost.getDataPublication());
             }
-
             // Validamos o admin também no update para evitar trocar para um admin inexistente
             if (post.getAdmin() != null && post.getAdmin().getId() != null) {
                 AdminModel admin = adminRepository.findById(post.getAdmin().getId())
                         .orElseThrow(() -> new RuntimeException("Admin não encontrado para atualização."));
                 post.setAdmin(admin);
             }
-
             return repository.save(post);
         }).orElse(null);
     }
@@ -73,7 +67,6 @@ public class PostsService {
             repository.deleteById(id);
         }
     }
-
     public Page<PostsModel> findAll(Pageable pageable) {
         return repository.findAll(pageable);
     }

@@ -1,20 +1,38 @@
 package dev.blog.com.blog.Posts;
+import dev.blog.com.blog.services.ImageUploadService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.domain.Sort;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/posts")
 public class PostsController {
     private final PostsService service;
+    private final ImageUploadService imageUploadService;
 
-    public PostsController(PostsService service) {
+    public PostsController(PostsService service, ImageUploadService imageUploadService) {
         this.service = service;
+        this.imageUploadService = imageUploadService;
+    }
+
+    @PostMapping(consumes = { "multipart/form-data" })
+    public ResponseEntity<PostsModel> create(
+            @RequestPart("post") @Valid PostsModel post,
+            @RequestPart("file") MultipartFile file) throws IOException {
+
+        // Agora enviamos a pasta "posts" como destino
+        String imageUrl = imageUploadService.uploadImage(file, "posts");
+        post.setImageUrl(imageUrl);
+
+        return ResponseEntity.status(201).body(service.save(post));
     }
 
     @PostMapping
@@ -23,10 +41,10 @@ public class PostsController {
         return ResponseEntity.status(201).body(savedPost);
     }
 
-    @GetMapping
-    public List<PostsModel> findAll() {
-        return service.findAll();
-    }
+//    @GetMapping
+//    public List<PostsModel> findAll() {
+//        return service.findAll();
+//    }
 
     @GetMapping("/{id}")
     public ResponseEntity<PostsModel> findById(@PathVariable Long id) {
