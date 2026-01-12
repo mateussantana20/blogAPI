@@ -4,6 +4,8 @@ import dev.blog.com.blog.Admins.AdminRepository;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import java.util.Optional;
 
 @Service
@@ -70,5 +72,9 @@ public class PostsService {
         if (repository.existsById(id)) {
             repository.deleteById(id);
         }
+    }
+
+    public Page<PostsModel> findAll(Pageable pageable) {
+        return repository.findAll(pageable);
     }
 }
