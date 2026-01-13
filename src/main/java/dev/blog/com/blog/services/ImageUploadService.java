@@ -22,9 +22,19 @@ public class ImageUploadService {
         return uploadResult.get("secure_url").toString();
     }
 
-    public void deleteImage(String imageUrl) throws IOException {
+    // No ImageUploadService.java, atualize o método delete:
+    public void deleteImage(String imageUrl, String folderName) throws IOException {
         String publicId = imageUrl.substring(imageUrl.lastIndexOf("/") + 1, imageUrl.lastIndexOf("."));
-        String fullPublicId = "escola/posts/" + publicId;
+        String fullPublicId = "escola/" + folderName + "/" + publicId;
         cloudinary.uploader().destroy(fullPublicId, ObjectUtils.emptyMap());
+    }
+
+    public String uploadProfilePicture(MultipartFile file) throws IOException {
+        Map uploadResult = cloudinary.uploader().upload(file.getBytes(),
+                ObjectUtils.asMap(
+                        "folder", "escola/perfil",
+                        "transformation", "w_200,h_200,c_fill,g_face" // Corta em 200x200 focando no rosto
+                ));
+        return uploadResult.get("secure_url").toString();
     }
 }
