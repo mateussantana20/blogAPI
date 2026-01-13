@@ -16,10 +16,15 @@ public class ImageUploadService {
     }
 
     public String uploadImage(MultipartFile file, String folderName) throws IOException {
-        // Adicionamos a opção "folder" no mapa de configuração do upload
         Map uploadResult = cloudinary.uploader().upload(file.getBytes(),
                 ObjectUtils.asMap("folder", "escola/" + folderName));
 
         return uploadResult.get("secure_url").toString();
+    }
+
+    public void deleteImage(String imageUrl) throws IOException {
+        String publicId = imageUrl.substring(imageUrl.lastIndexOf("/") + 1, imageUrl.lastIndexOf("."));
+        String fullPublicId = "escola/posts/" + publicId;
+        cloudinary.uploader().destroy(fullPublicId, ObjectUtils.emptyMap());
     }
 }

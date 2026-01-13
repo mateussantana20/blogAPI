@@ -1,9 +1,14 @@
 package dev.blog.com.blog.Posts;
 import dev.blog.com.blog.Admins.AdminModel;
 import dev.blog.com.blog.Admins.AdminRepository;
+import dev.blog.com.blog.services.ImageUploadService;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -12,10 +17,12 @@ public class PostsService {
 
     private final PostsRepository repository;
     private final AdminRepository adminRepository; // Injetado para validar o autor
+    private final ImageUploadService imageUploadService;
 
-    public PostsService(PostsRepository repository, AdminRepository adminRepository) {
+    public PostsService(PostsRepository repository, AdminRepository adminRepository,  ImageUploadService imageUploadService) {
         this.repository = repository;
         this.adminRepository = adminRepository;
+        this.imageUploadService = imageUploadService;
     }
     public List<PostsModel> findAll() {
         return repository.findAll();
@@ -63,10 +70,19 @@ public class PostsService {
     }
 
     public void deleteById(Long id) {
-        if (repository.existsById(id)) {
-            repository.deleteById(id);
+        Optional<PostsModel> post = repository.findById(id);
+        if (post.isPresent()) {
+            try {
+                if (post.get().getImageUrl() != null) {
+                    imageUploadService.deleteImage(post.get().getImageUrl());
+                }
+                repository.deleteById(id);
+            } catch (IOException e) {
+                throw new RuntimeException("Erro ao deletar imagem do Cloudinary: " + e.getMessage());
+            }
         }
     }
+
     public Page<PostsModel> findAll(Pageable pageable) {
         return repository.findAll(pageable);
     }
