@@ -1,5 +1,4 @@
 package dev.blog.com.blog.services;
-
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import org.springframework.stereotype.Service;
@@ -18,11 +17,9 @@ public class ImageUploadService {
     public String uploadImage(MultipartFile file, String folderName) throws IOException {
         Map uploadResult = cloudinary.uploader().upload(file.getBytes(),
                 ObjectUtils.asMap("folder", "escola/" + folderName));
-
         return uploadResult.get("secure_url").toString();
     }
 
-    // No ImageUploadService.java, atualize o método delete:
     public void deleteImage(String imageUrl, String folderName) throws IOException {
         String publicId = imageUrl.substring(imageUrl.lastIndexOf("/") + 1, imageUrl.lastIndexOf("."));
         String fullPublicId = "escola/" + folderName + "/" + publicId;

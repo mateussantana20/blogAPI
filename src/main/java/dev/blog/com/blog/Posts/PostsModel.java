@@ -1,5 +1,6 @@
 package dev.blog.com.blog.Posts;
 import dev.blog.com.blog.Admins.AdminModel;
+import dev.blog.com.blog.Categories.CategoryModel;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -35,4 +36,9 @@ public class PostsModel {
     @ManyToOne
     @JoinColumn(name = "admin_id") // Boa prática: define o nome da coluna da FK
     private AdminModel admin;
+
+    // Adicione estes campos dentro da sua classe PostsModel
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private CategoryModel category;
 }
