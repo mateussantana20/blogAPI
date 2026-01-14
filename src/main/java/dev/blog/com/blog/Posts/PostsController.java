@@ -90,4 +90,13 @@ public class PostsController {
         service.deleteById(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<Page<PostDTO>> searchByTitle(
+            @RequestParam("title") String title,
+            @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+
+        Page<PostDTO> posts = postsRepository.findByTitleContainingIgnoreCase(title, pageable).map(PostDTO::new);
+        return ResponseEntity.ok(posts);
+    }
 }

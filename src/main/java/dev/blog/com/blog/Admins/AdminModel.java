@@ -1,44 +1,55 @@
 package dev.blog.com.blog.Admins;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.blog.com.blog.Posts.PostsModel;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.Collection;
 import java.util.List;
 
-// Diz que isso é uma entidade para o banco de dados;
 @Entity
-@Table(name = "tb_admin")
-@AllArgsConstructor// Lombok
-@NoArgsConstructor // Lombok
-@Data // Lombok - cria os Getters e os Setters
-public class AdminModel {
+@Table(name = "tb_admins")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class AdminModel implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @NotBlank(message = "Name is required")
     private String name;
-
     @Column(unique = true)
-    @Email(message = "Invalid email format")
     private String email;
-
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
-
-    @Column(name = "profile_picture")
-    private String profilePicture;
-
     private String bio;
+    private String profilePicture;
 
     @OneToMany(mappedBy = "admin")
     @JsonIgnore
     private List<PostsModel> posts;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"));
+    }
+
+    @Override
+    public String getUsername() { return email; }
+
+    @Override
+    public boolean isAccountNonExpired() { return true; }
+
+    @Override
+    public boolean isAccountNonLocked() { return true; }
+
+    @Override
+    public boolean isCredentialsNonExpired() { return true; }
+
+    @Override
+    public boolean isEnabled() { return true; }
 }
