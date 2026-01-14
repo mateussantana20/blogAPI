@@ -1,8 +1,7 @@
 # Estágio de Build (Compilação)
 FROM maven:3.9.4-eclipse-temurin-21 AS build
 COPY . .
-RUN mvn clean package -DskipTests
-
+RUN mvn clean package -DskipTests -Dmaven.test.skip=true
 # Estágio de Execução
 FROM eclipse-temurin:21-jdk-jammy
 COPY --from=build /target/*.jar app.jar
