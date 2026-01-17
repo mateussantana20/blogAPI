@@ -1,8 +1,9 @@
 package dev.blog.com.blog.Posts;
+
 import dev.blog.com.blog.Admins.AdminModel;
 import dev.blog.com.blog.Admins.AdminRepository;
 import dev.blog.com.blog.Categories.CategoryModel;
-import dev.blog.com.blog.Categories.CategoryRepository; // Importação necessária
+import dev.blog.com.blog.Categories.CategoryRepository;
 import dev.blog.com.blog.services.ImageUploadService;
 import org.springframework.stereotype.Service;
 import java.io.IOException;
@@ -17,7 +18,7 @@ public class PostsService {
 
     private final PostsRepository repository;
     private final AdminRepository adminRepository;
-    private final CategoryRepository categoryRepository; // Injetado para buscar os dados da categoria
+    private final CategoryRepository categoryRepository;
     private final ImageUploadService imageUploadService;
 
     public PostsService(PostsRepository repository,
@@ -34,20 +35,24 @@ public class PostsService {
         return repository.findAll();
     }
 
+    public Page<PostsModel> findAll(Pageable pageable) {
+        return repository.findAll(pageable);
+    }
+
     public PostsModel findById(Long id) {
         return repository.findById(id).orElse(null);
     }
 
     public PostsModel save(PostsModel post) {
-        // 1. Validar e associar o Admin
         if (post.getAdmin() == null || post.getAdmin().getId() == null) {
             throw new RuntimeException("Erro: Todo post precisa de um administrador associado.");
         }
+
         AdminModel admin = adminRepository.findById(post.getAdmin().getId())
                 .orElseThrow(() -> new RuntimeException("Erro: O Administrador não existe."));
         post.setAdmin(admin);
 
-        // 2. BUSCA A CATEGORIA NO BANCO (Para evitar o categoryName: null no JSON)
+        // 2. Busca Categoria
         if (post.getCategory() != null && post.getCategory().getId() != null) {
             CategoryModel category = categoryRepository.findById(post.getCategory().getId())
                     .orElseThrow(() -> new RuntimeException("Erro: Categoria não encontrada."));
@@ -60,43 +65,29 @@ public class PostsService {
         return repository.save(post);
     }
 
-    public PostsModel update(PostsModel post, Long id, String newImageUrl) {
+    public PostsModel update(PostsModel postData, Long id, String newImageUrl) {
         return repository.findById(id).map(existingPost -> {
-            post.setId(id);
 
-            if (post.getDataPublication() == null) {
-                post.setDataPublication(existingPost.getDataPublication());
+            existingPost.setTitle(postData.getTitle());
+            existingPost.setContent(postData.getContent());
+
+            if (postData.getCategory() != null && postData.getCategory().getId() != null) {
+                CategoryModel category = categoryRepository.findById(postData.getCategory().getId())
+                        .orElseThrow(() -> new RuntimeException("Categoria não encontrada."));
+                existingPost.setCategory(category);
             }
 
-            // Se uma nova imagem foi enviada, deleta a antiga e define a nova
             if (newImageUrl != null) {
-                if (existingPost.getImageUrl() != null) {
+                if (existingPost.getImageUrl() != null && !existingPost.getImageUrl().startsWith("http")) {
                     try {
                         imageUploadService.deleteImage(existingPost.getImageUrl(), "posts");
                     } catch (Exception e) {
                         System.out.println("Erro ao deletar imagem antiga: " + e.getMessage());
                     }
                 }
-                post.setImageUrl(newImageUrl);
-            } else {
-                // Se não enviou foto nova, mantém a que já estava
-                post.setImageUrl(existingPost.getImageUrl());
+                existingPost.setImageUrl(newImageUrl);
             }
-
-            // Mantém as associações de Admin e Categoria
-            if (post.getAdmin() != null && post.getAdmin().getId() != null) {
-                AdminModel admin = adminRepository.findById(post.getAdmin().getId())
-                        .orElseThrow(() -> new RuntimeException("Admin não encontrado."));
-                post.setAdmin(admin);
-            }
-
-            if (post.getCategory() != null && post.getCategory().getId() != null) {
-                CategoryModel category = categoryRepository.findById(post.getCategory().getId())
-                        .orElseThrow(() -> new RuntimeException("Categoria não encontrada."));
-                post.setCategory(category);
-            }
-
-            return repository.save(post);
+            return repository.save(existingPost);
         }).orElse(null);
     }
 
@@ -104,17 +95,20 @@ public class PostsService {
         Optional<PostsModel> post = repository.findById(id);
         if (post.isPresent()) {
             try {
-                if (post.get().getImageUrl() != null) {
+                if (post.get().getImageUrl() != null && !post.get().getImageUrl().startsWith("http")) {
                     imageUploadService.deleteImage(post.get().getImageUrl(), "posts");
                 }
                 repository.deleteById(id);
-            } catch (IOException e) {
-                throw new RuntimeException("Erro ao deletar imagem do Cloudinary: " + e.getMessage());
+            } catch (Exception e) {
+                // Mudamos para apenas logar erro de imagem, mas deletar o post mesmo assim
+                System.err.println("Aviso: Erro ao deletar imagem, mas prosseguindo com delete do post: " + e.getMessage());
+                repository.deleteById(id);
             }
         }
     }
 
-    public Page<PostsModel> findAll(Pageable pageable) {
-        return repository.findAll(pageable);
+    // Método de busca
+    public Page<PostsModel> searchByTitle(String title, Pageable pageable) {
+        return repository.findByTitleContainingIgnoreCase(title, pageable);
     }
 }

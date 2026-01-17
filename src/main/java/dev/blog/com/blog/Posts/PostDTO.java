@@ -9,6 +9,7 @@ public record PostDTO(
         String imageUrl,
         String categoryName,
         String categorySlug,
+        Long categoryId, // <--- NOVO CAMPO
         AdminDTO author,
         LocalDateTime dataPublication // <--- 1. Adicione este campo
 ) {
@@ -20,6 +21,7 @@ public record PostDTO(
                 post.getImageUrl(),
                 post.getCategory() != null ? post.getCategory().getName() : "Sem Categoria",
                 post.getCategory() != null ? post.getCategory().getSlug() : "geral",
+                post.getCategory() != null ? post.getCategory().getId() : null, // <--- PREENCHE O ID
                 post.getAdmin() != null ? new AdminDTO(post.getAdmin()) : null,
                 post.getDataPublication()
         );
