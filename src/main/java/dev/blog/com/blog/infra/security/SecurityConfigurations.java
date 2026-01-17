@@ -34,7 +34,7 @@ public class SecurityConfigurations {
                 .authorizeHttpRequests(authorize -> authorize
                         // --- ROTAS PÚBLICAS ---
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/admins").permitAll()
+//                        .requestMatchers(HttpMethod.POST, "/admins").permitAll()
                         .requestMatchers(HttpMethod.GET, "/posts/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/categories/**").permitAll()
 
