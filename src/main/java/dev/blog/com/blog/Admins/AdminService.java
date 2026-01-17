@@ -35,15 +35,22 @@ public class AdminService {
         return repository.findById(id).orElse(null);
     }
 
-    public AdminModel update(AdminModel admin, Long id, String newImageUrl) {
+    public AdminModel update(AdminModel inputData, Long id, String newImageUrl) {
         return repository.findById(id).map(existingAdmin -> {
-            admin.setId(id);
-            if (admin.getPassword() != null && !admin.getPassword().isBlank()) {
-                admin.setPassword(passwordEncoder.encode(admin.getPassword()));
-            } else {
-                admin.setPassword(existingAdmin.getPassword());
+
+            // Atualiza apenas se o dado foi enviado (evita null)
+            if (inputData.getName() != null) existingAdmin.setName(inputData.getName());
+            if (inputData.getBio() != null) existingAdmin.setBio(inputData.getBio());
+            if (inputData.getEmail() != null) existingAdmin.setEmail(inputData.getEmail());
+
+            // Lógica de Senha
+            if (inputData.getPassword() != null && !inputData.getPassword().isBlank()) {
+                existingAdmin.setPassword(passwordEncoder.encode(inputData.getPassword()));
             }
+
+            // Lógica de Imagem
             if (newImageUrl != null) {
+                // Deleta antiga se existir
                 if (existingAdmin.getProfilePicture() != null) {
                     try {
                         imageUploadService.deleteImage(existingAdmin.getProfilePicture(), "perfil");
@@ -51,11 +58,11 @@ public class AdminService {
                         System.out.println("Erro ao deletar imagem antiga: " + e.getMessage());
                     }
                 }
-                admin.setProfilePicture(newImageUrl);
-            } else {
-                admin.setProfilePicture(existingAdmin.getProfilePicture());
+                existingAdmin.setProfilePicture(newImageUrl);
             }
-            return repository.save(admin);
+            // Se newImageUrl for null, mantém a antiga (não faz nada)
+
+            return repository.save(existingAdmin);
         }).orElse(null);
     }
 
