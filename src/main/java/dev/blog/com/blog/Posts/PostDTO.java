@@ -1,5 +1,6 @@
 package dev.blog.com.blog.Posts;
 import dev.blog.com.blog.Admins.AdminDTO;
+import java.time.LocalDateTime; // <--- Importante importar isso
 
 public record PostDTO(
         Long id,
@@ -8,7 +9,8 @@ public record PostDTO(
         String imageUrl,
         String categoryName,
         String categorySlug,
-        AdminDTO author
+        AdminDTO author,
+        LocalDateTime dataPublication // <--- 1. Adicione este campo
 ) {
     public PostDTO(PostsModel post) {
         this(
@@ -18,7 +20,8 @@ public record PostDTO(
                 post.getImageUrl(),
                 post.getCategory() != null ? post.getCategory().getName() : "Sem Categoria",
                 post.getCategory() != null ? post.getCategory().getSlug() : "geral",
-                post.getAdmin() != null ? new AdminDTO(post.getAdmin()) : null // PROTEÇÃO AQUI
+                post.getAdmin() != null ? new AdminDTO(post.getAdmin()) : null,
+                post.getDataPublication()
         );
     }
 }
